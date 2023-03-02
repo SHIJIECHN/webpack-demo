@@ -1,4 +1,6 @@
 import './index.css'
+import './less.less'
+import './sass.scss'
 
 let title = require('./title.txt');
-console.log(title.default);
+document.write(title.default);

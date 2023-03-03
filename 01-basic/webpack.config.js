@@ -20,11 +20,22 @@ module.exports = {
   },
   module: {
     rules: [
-      { test: /\.txt$/, use: 'raw-loader' },
+      { test: /\.txt$/, use: ['raw-loader'] },
 
       { test: /\.css$/, use: ['style-loader', 'css-loader'] }, // CSS
-      { test: /\.less$/, use: ['style-loader', 'css-loader', 'less-loader'] }, //
-      { test: /\.scss$/, use: ['style-loader', 'css-loader', 'sass-loader'] }
+      { test: /\.less$/, use: ['style-loader', 'css-loader', 'less-loader'] }, //less
+      { test: /\.scss$/, use: ['style-loader', 'css-loader', 'sass-loader'] }, // sass
+      {
+        test: /\.(jpg|png|gif|bmp)$/, use: [{
+          loader: 'url-loader', // 打包时将图片拷贝到dist目录下，并重命名文件名
+          options: {
+            name: '[hash:10].[ext]', //指定文件名
+            esModule: false, // 默认导入图片后{default：...}, default后面才是真正的文件。为false表示包装成ES6模块
+            limit: 8 * 1024, // 如果文件的体积小于limit，小于8K的话，就转成base64字符串内嵌到HTML中，否则就和file-loader相同
+          }
+        }]
+      }, // 图片
+      { test: /\.html$/, use: ['html-loader'] },
     ]
   },
   plugins: [

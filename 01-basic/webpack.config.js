@@ -1,5 +1,7 @@
 const { resolve } = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+// const { webpack, ProvidePlugin } = require('webpack');
+const HtmlWebpackExternalsPlugin = require('html-webpack-externals-plugin');
 
 module.exports = {
   mode: 'development', // 开发模式：开发环境、生产环境、不指定环境
@@ -18,8 +20,19 @@ module.exports = {
     port: 8080, // 指定HTTP服务器的端口号
     open: false, // true 自动打开浏览器
   },
+  externals: {
+    lodash: '_', // 如果在模块内部引用了lodash这个模块，会从window._上取值
+  },
   module: {
     rules: [
+      {
+        test: require.resolve('lodash'),
+        loader: 'expose-loader',
+        options: {
+          globalName: '_',
+          override: true,
+        },
+      },
       {
         test: /\.jsx?$/,
         loader: 'eslint-loader', // 先进行代码校验，再进行编译代码
@@ -28,33 +41,33 @@ module.exports = {
         // exclude: /node_modules/, // 不需要检查node_modules里面的代码
         include: resolve(__dirname, 'src'), // 只减产src目录里面的文件
       },
-      {
-        test: /\.jsx?$/,
-        use: [
-          {
-            loader: 'babel-loader',
-            options: {
-              // 预设（插件的集合）
-              presets: [
-                // '@babel/preset-env', // 可以转换JS语法
-                ['@babel/preset-env', { // 可默认只转换map set等，不能转换promise，需要配置参数
-                  useBuiltIns: 'usage', // 按加载polyfill
-                  corejs: { version: 3 }, // 指定corejs的版本号 2或者3 polyfill
-                  targets: { // 指定要兼容哪些浏览器
-                    chrome: '60',
-                  },
-                }],
-                '@babel/preset-react', // 可以转换JSX语法
-              ],
-              // 插件
-              plugins: [
-                ['@babel/plugin-proposal-decorators', { legacy: true }], // 使用装饰器语法
-                ['@babel/plugin-proposal-class-properties', { loose: true }], // 类属性
-              ],
-            },
-          },
-        ],
-      },
+      // {
+      //   test: /\.jsx?$/,
+      //   use: [
+      //     {
+      //       loader: 'babel-loader',
+      //       options: {
+      //         // 预设（插件的集合）
+      //         presets: [
+      //           // '@babel/preset-env', // 可以转换JS语法
+      //           ['@babel/preset-env', { // 可默认只转换map set等，不能转换promise，需要配置参数
+      //             useBuiltIns: 'usage', // 按加载polyfill
+      //             corejs: { version: 3 }, // 指定corejs的版本号 2或者3 polyfill
+      //             targets: { // 指定要兼容哪些浏览器
+      //               chrome: '60',
+      //             },
+      //           }],
+      //           '@babel/preset-react', // 可以转换JSX语法
+      //         ],
+      //         // 插件
+      //         plugins: [
+      //           ['@babel/plugin-proposal-decorators', { legacy: true }], // 使用装饰器语法
+      //           ['@babel/plugin-proposal-class-properties', { loose: true }], // 类属性
+      //         ],
+      //       },
+      //     },
+      //   ],
+      // },
       { test: /\.txt$/, use: ['raw-loader'] },
 
       { test: /\.css$/, use: ['style-loader', 'css-loader'] }, // CSS
@@ -78,5 +91,18 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: './src/index.html',
     }),
+    // 会自动向模块内部注入lodash模块, 在模块内部可以通过 _ 引用
+    // new ProvidePlugin({
+    //   _: 'lodash',
+    // }),
+
+    // new HtmlWebpackExternalsPlugin({
+    //   externals: [
+    //     {
+    //       module: 'lodash',
+    //       extry: ''
+    //     }
+    //   ]
+    // })
   ],
 };

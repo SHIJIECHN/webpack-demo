@@ -3,7 +3,7 @@
  */
 
 function loader(source) {
-  reutnr`module.exports = "${source}"`
+  return `module.exports = "${source}"`;
 }
 
 module.exports = loader;

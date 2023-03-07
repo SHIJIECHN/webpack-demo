@@ -1,14 +1,19 @@
 const { resolve } = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 // const { webpack, ProvidePlugin } = require('webpack');
-const HtmlWebpackExternalsPlugin = require('html-webpack-externals-plugin');
+// const HtmlWebpackExternalsPlugin = require('html-webpack-externals-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin'); // 拷贝静态文件
 const { CleanWebpackPlugin } = require('clean-webpack-plugin'); // 打包前清空目录
+const MiniCssExtractPlugin = require('mini-css-extract-plugin'); // 提取css到单独文件
 
 module.exports = {
   mode: 'development', // 开发模式：开发环境、生产环境、不指定环境
-  devtool: 'cheap-source-map',
-  entry: './src/index.js', // 入口
+  devtool: false,
+  entry: {
+    main: './src/index.js',
+    vendor: ['lodash'], // 第三方
+  },
+  // entry: './src/index.js', // 入口
   // watch: true, // 开启监控模式
   // watchOptions: {
   //   ignored: /node_modules/, // 忽略的文件夹
@@ -17,7 +22,7 @@ module.exports = {
   // },
   output: {
     path: resolve(__dirname, 'dist'), // 输出文件夹的绝对路径，__dirname 当前文件所在的目录
-    filename: 'main.js', // 输出的文件名
+    filename: '[name].[chunkhash:8].js', // 输出的文件名
     publicPath: '/', // 上线后有可能把资源文件放在CDN
   },
   // devServer会启动一个HTTP开发服务器，把一个文件夹作为静态根目录
@@ -96,9 +101,9 @@ module.exports = {
       // },
       { test: /\.txt$/, use: ['raw-loader'] },
 
-      { test: /\.css$/, use: ['style-loader', 'css-loader'] }, // CSS
-      { test: /\.less$/, use: ['style-loader', 'css-loader', 'less-loader'] }, // less
-      { test: /\.scss$/, use: ['style-loader', 'css-loader', 'sass-loader'] }, // sass
+      { test: /\.css$/, use: [MiniCssExtractPlugin.loader, 'css-loader'] }, // CSS
+      { test: /\.less$/, use: [MiniCssExtractPlugin.loader, 'css-loader', 'less-loader'] }, // less
+      { test: /\.scss$/, use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader'] }, // sass
       {
         test: /\.(jpg|png|gif|bmp)$/,
         use: [{
@@ -107,6 +112,8 @@ module.exports = {
             name: '[hash:10].[ext]', // 指定文件名
             esModule: false, // 默认导入图片后{default：...}, default后面才是真正的文件。为false表示包装成ES6模块
             limit: 8 * 1024, // 如果文件的体积小于limit，小于8K的话，就转成base64字符串内嵌到HTML中，否则就和file-loader相同
+            outputPath: 'images', // 默认情况下图片放在dist根目录下，指定写入到输出目录dist/images
+            publicPath: '/images', // 使用outputPath时，需要加上publicPath
           },
         }],
       }, // 图片
@@ -117,20 +124,23 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: './src/index.html',
     }),
+    new MiniCssExtractPlugin({
+      filename: 'css/[name].[contenthash:8].css',
+    }),
     // 会自动向模块内部注入lodash模块, 在模块内部可以通过 _ 引用
     // new ProvidePlugin({
     //   _: 'lodash',
     // }),
 
-    new HtmlWebpackExternalsPlugin({
-      externals: [
-        {
-          module: 'lodash', // 模块名
-          entry: 'https://cdn.bootcdn.net/ajax/libs/lodash.js/4.17.21/lodash.js', // CDN脚本地址
-          global: '_', // 全局变量名
-        },
-      ],
-    }),
+    // new HtmlWebpackExternalsPlugin({
+    //   externals: [
+    //     {
+    //       module: 'lodash', // 模块名
+    //       entry: 'https://cdn.bootcdn.net/ajax/libs/lodash.js/4.17.21/lodash.js', // CDN脚本地址
+    //       global: '_', // 全局变量名
+    //     },
+    //   ],
+    // }),
     new CopyWebpackPlugin({
       patterns: [
         {

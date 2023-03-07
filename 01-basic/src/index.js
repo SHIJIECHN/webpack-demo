@@ -1,6 +1,11 @@
-// import _ from 'lodash';
+// import { join } from 'lodash';
 
 // console.log(_.join(['a', 'b', 'c'], '@'));
-import $ from 'jquery';
+// console.log('11');
+// import $ from 'jquery';
 
-console.log($);
+// console.log($);
+
+fetch('/api/users').then((res) => res.json()).then((res) => {
+  console.log(res);
+});

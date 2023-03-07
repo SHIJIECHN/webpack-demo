@@ -2,11 +2,19 @@ const { resolve } = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 // const { webpack, ProvidePlugin } = require('webpack');
 const HtmlWebpackExternalsPlugin = require('html-webpack-externals-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin'); // 拷贝静态文件
+const { CleanWebpackPlugin } = require('clean-webpack-plugin'); // 打包前清空目录
 
 module.exports = {
   mode: 'development', // 开发模式：开发环境、生产环境、不指定环境
   devtool: 'cheap-source-map',
   entry: './src/index.js', // 入口
+  // watch: true, // 开启监控模式
+  // watchOptions: {
+  //   ignored: /node_modules/, // 忽略的文件夹
+  //   aggregateTimeout: 300, // 监听到变化后会等300ms再去执行（防抖的优化）
+  //   poll: 1000, // 轮询。每秒问操作系统多少次文件是否变化
+  // },
   output: {
     path: resolve(__dirname, 'dist'), // 输出文件夹的绝对路径，__dirname 当前文件所在的目录
     filename: 'main.js', // 输出的文件名
@@ -19,6 +27,24 @@ module.exports = {
     writeToDisk: true, // 如果指定此选项，也会把打包后的文件写入磁盘一份，也就是说会在项目下创建dist文件夹
     port: 8080, // 指定HTTP服务器的端口号
     open: false, // true 自动打开浏览器
+    // proxy: {
+    //   '/api': {
+    //     target: 'http://localhost:3333',
+    //     pathRewrite: {
+    //       '^/api': '',
+    //     },
+    //   },
+    // },
+    before(app) { // webpack-dev-server本质是一个express服务器 app
+      app.get('/api/users', (req, res) => {
+        res.json([{ name: 'zhufeng2', age: 12 }]);
+      });
+    },
+    after(app) {
+      app.get('/api/users', (req, res) => {
+        res.json([{ name: 'zhufeng2', age: 12 }]);
+      });
+    },
   },
   externals: {
     lodash: '_', // 如果在模块内部引用了lodash这个模块，会从window._上取值
@@ -96,13 +122,25 @@ module.exports = {
     //   _: 'lodash',
     // }),
 
-    // new HtmlWebpackExternalsPlugin({
-    //   externals: [
-    //     {
-    //       module: 'lodash',
-    //       extry: ''
-    //     }
-    //   ]
-    // })
+    new HtmlWebpackExternalsPlugin({
+      externals: [
+        {
+          module: 'lodash', // 模块名
+          entry: 'https://cdn.bootcdn.net/ajax/libs/lodash.js/4.17.21/lodash.js', // CDN脚本地址
+          global: '_', // 全局变量名
+        },
+      ],
+    }),
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: resolve(__dirname, 'src/design'),
+          to: resolve(__dirname, 'dist/design'),
+        },
+      ],
+    }),
+    new CleanWebpackPlugin({ // 在重新打包前先把输出目录清空一下
+      cleanOnceBeforeBuildPatters: ['**/*'],
+    }),
   ],
 };

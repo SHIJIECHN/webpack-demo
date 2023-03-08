@@ -1,4 +1,5 @@
-const { resolve } = require('path');
+const { resolve, join, basename } = require('path');
+const fs = require('fs');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 // const { webpack, ProvidePlugin } = require('webpack');
 // const HtmlWebpackExternalsPlugin = require('html-webpack-externals-plugin');
@@ -6,14 +7,35 @@ const CopyWebpackPlugin = require('copy-webpack-plugin'); // 拷贝静态文件
 const { CleanWebpackPlugin } = require('clean-webpack-plugin'); // 打包前清空目录
 const MiniCssExtractPlugin = require('mini-css-extract-plugin'); // 提取css到单独文件
 // const TerserPlugin = require('terser-webpack-plugin'); // 压缩JS
-const OptimizeCssAssetsWebpackPlugin = require('optimize-css-assets-webpack-plugin'); // 压缩CSS
+// const OptimizeCssAssetsWebpackPlugin = require('optimize-css-assets-webpack-plugin'); // 压缩CSS
+
+const pagesRoot = resolve(__dirname, 'src', 'pages'); // 页面所在的根路径
+const pages = fs.readdirSync(pagesRoot); // 读取pages下的所有文件
+const htmlWebpackPlugins = [];
+const entry = pages.reduce((entry, filename) => {
+  // entry[page1] = '...'
+  const entryname = basename(filename, '.js');
+  entry[entryname] = join(pagesRoot, filename);
+  htmlWebpackPlugins.push(new HtmlWebpackPlugin({
+    template: './src/index.html',
+    filename: `${entryname}.html`, // html文件名
+    chunks: [entryname], // page1.html 应用 page1 的资源
+  }));
+  return entry;
+}, {});
+
+console.log(entry);
+/**
+ * {
+ *  page1: 'C:\\Users\\webpack-demo\\01-basic\\src\\pages\\page1.js',
+ *  page2: 'C:\\Users\\webpack-demo\\01-basic\\src\\pages\\page2.js'
+ * }
+ */
 
 module.exports = {
   mode: 'development', // 开发模式：开发环境、生产环境、不指定环境
   devtool: false,
-  entry: {
-    main: './src/index.js',
-  },
+  entry,
   output: {
     path: resolve(__dirname, 'dist'), // 输出文件夹的绝对路径，__dirname 当前文件所在的目录
     filename: '[name].js', // 输出的文件名
@@ -105,18 +127,21 @@ module.exports = {
     ],
   },
   plugins: [
-    new HtmlWebpackPlugin({
-      template: './src/index.html',
-      filename: 'index.html',
-      minify: { // 压缩HTML
-        collapseWhitespace: true, // 去掉空格
-        removeComments: true, // 去掉注释
-      },
-    }),
+    ...htmlWebpackPlugins,
+    // new HtmlWebpackPlugin({
+    //   template: './src/index.html',
+    //   filename: 'page1.html', // html文件名
+    //   chunks: ['page1'], // page1.html 应用 page1 的资源
+    // }),
+    // new HtmlWebpackPlugin({
+    //   template: './src/index.html',
+    //   filename: 'page2.html',
+    //   chunks: ['page2'],
+    // }),
     new MiniCssExtractPlugin({
       filename: 'css/[name].css',
     }),
-    new OptimizeCssAssetsWebpackPlugin(), // 压缩CSS
+    // new OptimizeCssAssetsWebpackPlugin(), // 压缩CSS
     new CopyWebpackPlugin({
       patterns: [
         {

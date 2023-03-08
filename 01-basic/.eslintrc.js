@@ -7,6 +7,8 @@ module.exports = {
     'linebreak-style': 'off',
     'eol-last': 'off',
     'no-unused-vars': 'off',
+    'no-shadow': 'off',
+    'no-param-reassign': 'off',
     // "indent":["error",2]
   },
   env: {

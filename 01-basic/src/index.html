@@ -5,6 +5,18 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>webpack5</title>
+  <script>
+    let docElement = document.documentElement;
+    // 设置根元素font-size的大小
+    function setRemUni(){
+      // 把根元素的大小设置为宽度的十分之一
+      // 屏幕宽750px font-size为75
+      // iphone6 宽为375 font-size=37.5 10rem = 375px
+      docElement.style.fontSize = document.clientWidth / 10;  // 屏幕的宽度/10 + 'px'
+    }
+    setRemUni();
+    window.addEventListener('resize', setRemUni());// 监听resize事件
+  </script>
 </head>
 <body>
   <!-- 来自于我们的static目录
@@ -15,6 +27,7 @@
   在HTML里直接引入相对路径
   <img src="./images/logo.png" alt="logo.png"> -->
   <div id="root"></div>
-  <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.js"></script>
+  <input type="text" placeholder="请输入">
+  <!-- <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.js"></script> -->
 </body>
 </html>

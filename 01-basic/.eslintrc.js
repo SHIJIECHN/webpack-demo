@@ -6,6 +6,7 @@ module.exports = {
     'no-console': 'off',
     'linebreak-style': 'off',
     'eol-last': 'off',
+    'no-unused-vars': 'off',
     // "indent":["error",2]
   },
   env: {

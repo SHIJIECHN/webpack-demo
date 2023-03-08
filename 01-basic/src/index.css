@@ -1,13 +1,24 @@
 @import "./bg.css";
 
 body{
-  color: red;
-  background-image: ('./images/logo.png');
+  color: green;
+  /* background-image: ('./images/logo.png'); */
+  display: flex;
 }
 
-#image-container{
+#root{
+  width: 750px;
+  height: 750px;
+  border: 1px solid red;
+}
+
+::placeholder{
+  color: red;
+}
+
+/* #image-container{
   width: 400px;
   height: 103px;
   background-image: url('./images/logo.png');
   border: 1px solid #000;
-}
+} */

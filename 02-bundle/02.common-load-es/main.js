@@ -5,11 +5,11 @@
       // 就把exports传给r方法处理一下，exports.__esModule = true以后就可以通过这个属性来判断原来是不是es module
       require.r(exports);
       require.d(exports, {
-        default: () => DEFAULT_EXPORT, // getter
+        default: () => DEFAULT_EXPORT, // getter 
         age: () => age
       })
-      const DEFAULT_EXPORT = 'title_name';
-      const age = 'title_age';
+      const DEFAULT_EXPORT = 'title_name'; // 默认导出
+      const age = 'title_age'; // age
 
     }
   }
@@ -30,9 +30,10 @@
     Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
     Object.defineProperty(exports, '__esModule', { value: true }); // __esModule=true 标识
   }
-
+  // 为什么要用一个字母，因为减少打包后的文件体积
+  // __webpack_require__ exports definition 都可
   require.d = (exports, definition) => {
-    for (let key in definition) {
+    for (let key in definition) { // 循环definition，将属性赋给exports定义属性
       Object.defineProperty(exports, key, {
         enumerable: true,
         get: definition[key]

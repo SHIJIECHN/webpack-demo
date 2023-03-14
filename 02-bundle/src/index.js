@@ -1,6 +1,4 @@
-import name, { age } from './title';
-console.log(name);
-console.log(title);
-
-
-
+// 动态import，并给模块一个名称
+import(/* webpackChunkName: "hello" */ './hello.js').then(result => {
+  console.log(result.default)
+})

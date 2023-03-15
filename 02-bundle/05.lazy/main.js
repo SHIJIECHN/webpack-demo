@@ -21,12 +21,10 @@
     require.f.j(chunkId, promises);
     return Promise.all(promises); // 等着额promises数组都成功以后
   }
-
   require.p = ''; // publicPath资源访问路径 / 或者 ''
   require.u = (chunkId) => { // 参数是代码块的名字，返回值是这个代码块的文件名
     return chunkId + '.main.js'; // hello.main.js
   }
-
   // 已经安装的代码块 main代码块的名字 0表示已经就绪
   let installedChunks = {
     main: 0,
@@ -42,7 +40,6 @@
     var url = require.p + require.u(chunkId); // /hello.main.js
     require.l(url); // 加载额外的脚本
   }
-
   // http://localhost:5500/hello.main.js
   // 4. 通过jsonp请求这个新的地址
   require.l = (url) => {
@@ -60,19 +57,16 @@
       installedChunks[chunkIds[i]] = 0;
       resolves.push(chunkData[0]);
     }
-
     // 把异步加载回来的额外代码块合并到总的模块定义对象modules上去
     for (let moduleId in moreModules) {
       modules[moduleId] = moreModules[moduleId]
     }
     resolves.forEach(resolve => resolve());
   }
-
   require.r = (exports) => { // r方法作用是添加属性：Symbol.toStringTag和__esModule
     Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
     Object.defineProperty(exports, '__esModule', { value: true }); // __esModule=true 标识
   }
-
   require.d = (exports, definition) => {
     for (let key in definition) { // 循环definition，将属性赋给exports定义属性
       Object.defineProperty(exports, key, { enumerable: true, get: definition[key] })
@@ -82,7 +76,6 @@
   var chunkLoadingGlobal = window['webpack5'] = [];
   // 然后重写了window['webpack5'].push = webpackJsonpCallback
   chunkLoadingGlobal.push = webpackJsonpCallback;
-
   // 异步加载hello代码块，把hello代码块里的模块定义合并到主模块定义里面去
   // 再去加载这个hello.js这个模块，拿到模块的导出结果
   // 1. 准备加载异步代码块hello

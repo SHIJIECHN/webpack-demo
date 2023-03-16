@@ -17,9 +17,7 @@ module.exports = {
             plugins: [
               [path.resolve(__dirname, 'babel-plugins/babel-plugin-import.js'), {
                 "libraryName": 'lodash',
-                "libraryDirectory": 'fp',
-                "camel12DashComponentName": false
-
+                "libraryDirectory": 'fp'
               }]
             ]
           }

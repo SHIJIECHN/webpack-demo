@@ -30,6 +30,7 @@ let BabelPluginTransformClasses2 = {
       let classMethods = node.body.body;// 获取原来类上的方法 constructor getName
       let body = [];
       classMethods.forEach(method => {
+        console.log(method)
         if (method.kind === 'constructor') { // 如果方法的类型是构造函数的话
           // Person [name] this.name=name(body复用) 
           let construcorFunction = types.functionDeclaration(id, method.params, method.body, method.generator, method.async);

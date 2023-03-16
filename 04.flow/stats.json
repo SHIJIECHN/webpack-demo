@@ -1,0 +1,261 @@
+
+{
+  "hash": "d8324fc187ce4c876b09",
+  "version": "5.76.2",
+  "time": 106,
+  "builtAt": 1678976632848,
+  "publicPath": "auto",
+  "outputPath": "c:\\Users\\小石头\\Documents\\Learning\\A01-basicFrontEnd\\performance\\webpack-demo\\04.flow\\dist",
+  "assetsByChunkName": {
+    "main": [
+      "main.js"
+    ]
+  },
+  "assets": [
+    {
+      "type": "asset",
+      "name": "main.js",
+      "size": 2489,
+      "emitted": false,
+      "comparedForEmit": true,
+      "cached": false,
+      "info": {
+        "javascriptModule": false,
+        "size": 2489
+      },
+      "chunkNames": [
+        "main"
+      ],
+      "chunkIdHints": [],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "related": {},
+      "chunks": [
+        "main"
+      ],
+      "auxiliaryChunks": [],
+      "isOverSizeLimit": false
+    }
+  ],
+  "chunks": [
+    {
+      "rendered": true,
+      "initial": true,
+      "entry": true,
+      "recorded": false,
+      "size": 46,
+      "sizes": {
+        "javascript": 46
+      },
+      "names": [
+        "main"
+      ],
+      "idHints": [],
+      "runtime": [
+        "main"
+      ],
+      "files": [
+        "main.js"
+      ],
+      "auxiliaryFiles": [],
+      "hash": "7bdb6657887bae695749",
+      "childrenByOrder": {},
+      "id": "main",
+      "siblings": [],
+      "parents": [],
+      "children": [],
+      "origins": [
+        {
+          "module": "",
+          "moduleIdentifier": "",
+          "moduleName": "",
+          "loc": "main",
+          "request": "./src/index.js"
+        }
+      ]
+    }
+  ],
+  "modules": [
+    {
+      "type": "module",
+      "moduleType": "javascript/auto",
+      "layer": null,
+      "size": 21,
+      "sizes": {
+        "javascript": 21
+      },
+      "built": true,
+      "codeGenerated": true,
+      "buildTimeExecuted": false,
+      "cached": false,
+      "identifier": "c:\\Users\\小石头\\Documents\\Learning\\A01-basicFrontEnd\\performance\\webpack-demo\\04.flow\\src\\index.js",
+      "name": "./src/index.js",
+      "nameForCondition": "c:\\Users\\小石头\\Documents\\Learning\\A01-basicFrontEnd\\performance\\webpack-demo\\04.flow\\src\\index.js",
+      "index": 0,
+      "preOrderIndex": 0,
+      "index2": 1,
+      "postOrderIndex": 1,
+      "cacheable": true,
+      "optional": false,
+      "orphan": false,
+      "issuer": null,
+      "issuerName": null,
+      "issuerPath": null,
+      "failed": false,
+      "errors": 0,
+      "warnings": 0,
+      "id": "./src/index.js",
+      "issuerId": null,
+      "chunks": [
+        "main"
+      ],
+      "assets": [],
+      "reasons": [
+        {
+          "moduleIdentifier": null,
+          "module": null,
+          "moduleName": null,
+          "resolvedModuleIdentifier": null,
+          "resolvedModule": null,
+          "type": "entry",
+          "active": true,
+          "explanation": "",
+          "userRequest": "./src/index.js",
+          "loc": "main",
+          "moduleId": null,
+          "resolvedModuleId": null
+        }
+      ],
+      "usedExports": null,
+      "providedExports": null,
+      "optimizationBailout": [],
+      "depth": 0
+    },
+    {
+      "type": "module",
+      "moduleType": "javascript/auto",
+      "layer": null,
+      "size": 25,
+      "sizes": {
+        "javascript": 25
+      },
+      "built": true,
+      "codeGenerated": true,
+      "buildTimeExecuted": false,
+      "cached": false,
+      "identifier": "c:\\Users\\小石头\\Documents\\Learning\\A01-basicFrontEnd\\performance\\webpack-demo\\04.flow\\src\\title.js",
+      "name": "./src/title.js",
+      "nameForCondition": "c:\\Users\\小石头\\Documents\\Learning\\A01-basicFrontEnd\\performance\\webpack-demo\\04.flow\\src\\title.js",
+      "index": 1,
+      "preOrderIndex": 1,
+      "index2": 0,
+      "postOrderIndex": 0,
+      "cacheable": true,
+      "optional": false,
+      "orphan": false,
+      "issuer": "c:\\Users\\小石头\\Documents\\Learning\\A01-basicFrontEnd\\performance\\webpack-demo\\04.flow\\src\\index.js",
+      "issuerName": "./src/index.js",
+      "issuerPath": [
+        {
+          "identifier": "c:\\Users\\小石头\\Documents\\Learning\\A01-basicFrontEnd\\performance\\webpack-demo\\04.flow\\src\\index.js",
+          "name": "./src/index.js",
+          "id": "./src/index.js"
+        }
+      ],
+      "failed": false,
+      "errors": 0,
+      "warnings": 0,
+      "id": "./src/title.js",
+      "issuerId": "./src/index.js",
+      "chunks": [
+        "main"
+      ],
+      "assets": [],
+      "reasons": [
+        {
+          "moduleIdentifier": "c:\\Users\\小石头\\Documents\\Learning\\A01-basicFrontEnd\\performance\\webpack-demo\\04.flow\\src\\index.js",
+          "module": "./src/index.js",
+          "moduleName": "./src/index.js",
+          "resolvedModuleIdentifier": "c:\\Users\\小石头\\Documents\\Learning\\A01-basicFrontEnd\\performance\\webpack-demo\\04.flow\\src\\index.js",
+          "resolvedModule": "./src/index.js",
+          "type": "cjs require",
+          "active": true,
+          "explanation": "",
+          "userRequest": "./title.js",
+          "loc": "1:0-21",
+          "moduleId": "./src/index.js",
+          "resolvedModuleId": "./src/index.js"
+        },
+        {
+          "moduleIdentifier": "c:\\Users\\小石头\\Documents\\Learning\\A01-basicFrontEnd\\performance\\webpack-demo\\04.flow\\src\\title.js",
+          "module": "./src/title.js",
+          "moduleName": "./src/title.js",
+          "resolvedModuleIdentifier": "c:\\Users\\小石头\\Documents\\Learning\\A01-basicFrontEnd\\performance\\webpack-demo\\04.flow\\src\\title.js",
+          "resolvedModule": "./src/title.js",
+          "type": "cjs self exports reference",
+          "active": true,
+          "explanation": "",
+          "userRequest": null,
+          "loc": "1:0-14",
+          "moduleId": "./src/title.js",
+          "resolvedModuleId": "./src/title.js"
+        }
+      ],
+      "usedExports": null,
+      "providedExports": null,
+      "optimizationBailout": [
+        "CommonJS bailout: module.exports is used directly at 1:0-14"
+      ],
+      "depth": 1
+    }
+  ],
+  "entrypoints": {
+    "main": {
+      "name": "main",
+      "chunks": [
+        "main"
+      ],
+      "assets": [
+        {
+          "name": "main.js",
+          "size": 2489
+        }
+      ],
+      "filteredAssets": 0,
+      "assetsSize": 2489,
+      "auxiliaryAssets": [],
+      "filteredAuxiliaryAssets": 0,
+      "auxiliaryAssetsSize": 0,
+      "children": {},
+      "childAssets": {},
+      "isOverSizeLimit": false
+    }
+  },
+  "namedChunkGroups": {
+    "main": {
+      "name": "main",
+      "chunks": [
+        "main"
+      ],
+      "assets": [
+        {
+          "name": "main.js",
+          "size": 2489
+        }
+      ],
+      "filteredAssets": 0,
+      "assetsSize": 2489,
+      "auxiliaryAssets": [],
+      "filteredAuxiliaryAssets": 0,
+      "auxiliaryAssetsSize": 0,
+      "children": {},
+      "childAssets": {},
+      "isOverSizeLimit": false
+    }
+  },
+  "errors": [],
+  "errorsCount": 0,
+  "warnings": [],
+  "warningsCount": 0,
+  "children": []
+}

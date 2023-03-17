@@ -4,6 +4,7 @@ const RunPlugin = require('./plugins/run-plugin.js');
 
 module.exports = {
   mode: 'development',
+  devtool: 'inline-source-map',
   context: process.cwd(), // 根目录 current working directory
   entry: './src/index.js',
   output: {

@@ -1,1 +1,2 @@
-console.log(process.env.NODE_ENV);
+let title = require('./title.js')
+console.log(title);

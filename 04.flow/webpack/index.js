@@ -25,6 +25,8 @@ function webpack(options) {
     for (let plugin of finalOptions.plugins) { // 循环插件数组
       // 刚开始的时候，就会执行所有插件实例的apply方法，并传递compiler实例
       console.log(plugin)
+      // 所以说插件是在webpack开始编译之前全部挂载的
+      // 到那时要到插件关注的钩子触发的时候才执行
       plugin.apply(compiler); // 执行插件上的apply方法
     }
   }

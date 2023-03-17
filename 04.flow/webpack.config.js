@@ -1,15 +1,19 @@
 const path = require('path');
 const DonePlugin = require('./plugins/done-plugin.js');
 const RunPlugin = require('./plugins/run-plugin.js');
+const ReadmePlugin = require('./plugins/readme-plugin.js')
 
 module.exports = {
   mode: 'development',
   devtool: 'inline-source-map',
   context: process.cwd(), // 根目录 current working directory
-  entry: './src/index.js',
+  entry: {
+    page1: './src/page1.js',
+    page2: './src/page2.js'
+  },
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: 'main.js'
+    filename: '[name].js'
   },
   resolve: {
     extensions: ['.js', '.jsx', '.json']
@@ -28,5 +32,6 @@ module.exports = {
   plugins: [
     new RunPlugin(),
     new DonePlugin(),
+    new ReadmePlugin(),
   ]
 }

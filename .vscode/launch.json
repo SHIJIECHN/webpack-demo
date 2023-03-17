@@ -11,7 +11,7 @@
       "skipFiles": [
         "<node_internals>/**"
       ],
-      "program": "${workspaceFolder}/debugger.js"
+      "program": "${workspaceFolder}/04.flow/debugger.js"
     }
   ]
 }

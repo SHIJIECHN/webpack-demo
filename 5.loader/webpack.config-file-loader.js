@@ -6,8 +6,17 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.less$/,
-        use: [path.resolve('./loaders/style-loader.js'), path.resolve('./loaders/less-loader.js')],
+        test: /\.(jpg|png|gif)$/,
+        use: [{
+          loader: path.resolve('./loaders/url-loader.js'),
+          // loader: 'url-loader',
+          options: {
+            name: '[hash:8].[ext]',
+            esModule: false,
+            limit: 40 * 1024,
+            fallback: path.resolve('./loaders/file-loader.js')
+          }
+        }],
         include: path.resolve('src')
       }
     ]

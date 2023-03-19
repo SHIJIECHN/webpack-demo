@@ -3,11 +3,23 @@ const path = require('path')
 module.exports = {
   mode: 'development',
   devtool: 'inline-source-map',
+  // 配置如何查找loader
+  /*
+  resolveLoader: {
+    // 1
+    alias: {
+      'babel-laoder': path.resolve('./loaders/babel-loader.js')
+    },
+    // 2
+    modules: [path.resolve('./loaders'), "node_modules"], // 找不到再找node_modules
+  },
+  */
   module: {
     rules: [
       {
-        test: /\.less$/,
-        use: [path.resolve('./loaders/style-loader.js'), path.resolve('./loaders/less-loader.js')],
+        test: /\.js$/,
+        // 3
+        use: [path.resolve('./loaders/babel-loader.js')],
         include: path.resolve('src')
       }
     ]

@@ -9,6 +9,7 @@ const path = require('path');
 const fs = require('fs');
 const { runLoaders } = require('loader-runner');
 const filePath = path.resolve(__dirname, 'src', 'index.js'); // 源文件的绝对路径
+let loaders = [];
 
 // 如何得到
 // 要加载的资源 就是文件中有可能写 require('inline-loader1!inline-loader2!./src/index.js')
@@ -58,7 +59,7 @@ for (let i = 0; i < rules.length; i++) {
 preLoaders = preLoaders.map(resolveLoader);
 postLoaders = postLoaders.map(resolveLoader);
 normalLoaders = normalLoaders.map(resolveLoader);
-let loaders = [];
+
 if (request.startsWith('!!')) { // 不要pre、post、auto
   loaders = [...inlineLoaders];
 } else if (request.startsWith('-!')) { // 不要pre、auto

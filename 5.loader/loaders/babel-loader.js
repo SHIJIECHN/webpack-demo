@@ -28,10 +28,6 @@ function loader(source, inputSourceMap, data) { // es6
    * map什么用？可以让我们进行代码调试，debug的时候可以看到源代码
    * ast什么用？如果你返回了ast给webpack。webpack则直接分析就可以，不需要自己转AST了，节约时间。
    * 
-   * loader的返回值：
-   * loader分成两种：1.最左边的loader，2.其他的loader
-   * 最左边的loader 返回值只能是JS代码，因为它的返回值是给webpack，webpack是要用它生成JS AST。
-   * 其他的loader 返回值没有要求，可以是任意的内容，但是需要下一个loader能处理
    */
 }
 

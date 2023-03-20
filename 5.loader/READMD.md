@@ -65,3 +65,6 @@ postLoaders = postLoaders.map(resolveLoader);
 normalLoaders = normalLoaders.map(resolveLoader);
 let loaders = [...postLoaders, ...inlineLoaders, ...normalLoaders, ...preLoaders];
 ```
+
+1. 参数解构、url拆分成path、query、锚点，loaderContext赋值
+2. iteratePitchingLoaders ->runSyncOrAsync执行

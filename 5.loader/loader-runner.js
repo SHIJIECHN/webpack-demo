@@ -1,10 +1,11 @@
-const path = requrie('path');
+const path = require('path');
 let fs = require('fs');
 let readFile = fs.readFile.bind(this); // 读取硬盘上文件的默认方法
 
+/** 拆分url中的：path、query、锚点 */
 let PATH_QUERY_FRAGMENT_REGEXP = /^([^?#]*)(\?[^#]*)?(#.*)?$/;
 function parsePathQueryFragment(resource) {
-  let result = PATH_QUERY_FRAGMENT_REGEXP.exct(resource);
+  let result = PATH_QUERY_FRAGMENT_REGEXP.exec(resource);
   return {
     path: result[1], // 路径名 c:/src/index.js
     query: result[2], // 查询字符串 ?name=zhufeng
@@ -52,20 +53,48 @@ function createLoaderObject(request) {
  * @param {*} finalCallback 
  */
 function processResource(processOptions, loaderContext, finalCallback) {
-  loaderContext.loaderIndex--; // 索引等于最后一个loader的索引
-  let resourcePath = loaderContext.resourcePath;// c:/src/index.js 
+  loaderContext.loaderIndex--; // 重置索引。索引等于最后一个loader的索引
+  let resourcePath = loaderContext.path;// c:/src/index.js 
+  // 读取文件内容
   loaderContext.readResource(resourcePath, (err, resourceBuffer) => {
     if (err) finalCallback(err);
     processOptions.resourceBuffer = resourceBuffer;// 放的是资源的原始内容
-    iterateNormalLoaders(processOptions, loaderContext, [resourceBuffer], finalCallback); // 执行loader
+    // 执行loader
+    iterateNormalLoaders(processOptions, loaderContext, [resourceBuffer], finalCallback);
   })
 }
 
 function iterateNormalLoaders(processOptions, loaderContext, args, finalCallback) {
-  if (loaderContext.loaderIndex < 0) {// 如果索引已经小于0了，表示所有的normal执行完成了
-    finalCallback(null, args);
+  // 如果索引已经小于0了，表示所有的normal执行完成了
+  if (loaderContext.loaderIndex < 0) {
+    return finalCallback(null, args);
   }
+  // 获取当前的loader
+  let currentLoaderObject = loaderContext.loaders[loaderContext.loaderIndex];
+  if (currentLoaderObject.normalExecuted) { // 执行过了
+    loaderContext.loaderIndex--;
+    // 执行下一个
+    return iterateNormalLoaders(processOptions, loaderContext, args, finalCallback);
+  }
+  // 没有执行过
+  let normalFunction = currentLoaderObject.normal; // normal方法
+  currentLoaderObject.normalExecuted = true;
+  // 转换资源
+  converArgs(args, currentLoaderObject.raw);
+  runSyncOrAsync(normalFunction, loaderContext, args, (err, ...values) => {
+    if (err) finalCallback(err);
+    iterateNormalLoaders(processOptions, loaderContext, values, finalCallback);
+  })
+}
 
+function converArgs(args, raw) {
+  // 想要Buffer但现在不是Buffer，则转成Buffer
+  if (raw && !Buffer.isBuffer(args[0])) {
+    args[0] = Buffer.from(args[0]);
+  } else if (!raw && Buffer.isBuffer(args[0])) {
+    // 想要字符串，但是现在是Buffer，则转成字符串
+    args[0] = args[0].toString('utf8');
+  }
 }
 
 /**
@@ -83,13 +112,14 @@ function iteratePitchingLoaders(processOptions, loaderContext, finalCallback) {
   let currentLoaderObject = loaderContext.loaders[loaderContext.loaderIndex];
   if (currentLoaderObject.pitchExecuted) { // 执行过了
     loaderContext.loaderIndex++;
-    return iteratePitchingLoaders(processOptions, loaderContext, finalCallback); // 执行下一个
+    // 执行下一个
+    return iteratePitchingLoaders(processOptions, loaderContext, finalCallback);
   }
   // 没有执行过
   let pitchFunction = currentLoaderObject.pitch; // pitch方法
   currentLoaderObject.pitchExecuted = true; // 标记pitch函数已经执行过了
   if (!pitchFunction) { // 如果此loader没有提供pitch方法
-    return iteratePitchingLoaders(processOptions, loaderContext, finalCallback); // 
+    return iteratePitchingLoaders(processOptions, loaderContext, finalCallback);
   }
   // 以同步或者异步方式调用pitchFunction
   runSyncOrAsync(pitchFunction, loaderContext,
@@ -100,11 +130,9 @@ function iteratePitchingLoaders(processOptions, loaderContext, finalCallback) {
         loaderContext.loaderIndex--; // 索引减一
         iterateNormalLoaders(processOptions, loaderContext, values, finalCallback);// 回到上一个loader，执行上一个loader的normal方法
       } else {
-        iteratePitchingLoaders(processOptions, loaderContext, values, finalCallback);
+        iteratePitchingLoaders(processOptions, loaderContext, finalCallback);
       }
-
     })
-
 }
 
 /**
@@ -136,16 +164,16 @@ function runSyncOrAsync(fn, context, args, callback) {
   }
 }
 
-function runLoaders(options, callback) {
+function runLoaders(options, finalCallback) {
   let resource = options.resource || '';// 要加载的资源 c:/src/index.js?name=zhufeng#top
   let loaders = options.loaders || []; // loader绝对路径的数组
-  let loaderContext = options || {};// 这个是一个对象，它将成为loader函数执行时候的上下文对象this
-  let readResource = options.readResource || readFile;
+  let loaderContext = options.context || {};// 这个是一个对象，它将成为loader函数执行时候的上下文对象this
+  let readResource = options.readResource || readFile; // 读取文件的方法
   let splittedResource = parsePathQueryFragment(resource);
   let resourcePath = splittedResource.path;
   let resourceQuery = splittedResource.query;
   let resourceFragment = splittedResource.fragment;
-  let contextDirctory = path.dirname(resourcePath);// 要架子啊的资源所在的目录 c:/src
+  let contextDirctory = path.dirname(resourcePath);// 要加载的资源所在的目录 c:/src
 
   let loadersObject = loaders.map(createLoaderObject);
 
@@ -208,8 +236,8 @@ function runLoaders(options, callback) {
     resourceBuffer: null,
   }
   // 开始执行loader了
-  interatePitchingLoaders(processOptions, loaderContext, (err, result) => {
-    callback(err, {
+  iteratePitchingLoaders(processOptions, loaderContext, (err, result) => {
+    finalCallback(err, {
       result,
       resourceBuffer: processOptions.resourceBuffer
     })

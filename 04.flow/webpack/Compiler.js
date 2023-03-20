@@ -22,11 +22,11 @@ class Compiler {
       emit: new SyncHook(), // 会在将要写入文件的时候触发
       done: new SyncHook(), // 会结束编译的时候触发
     };
-    this.entries = new Set(); // 这个数组存放的所有的入口模块
-    this.modules = new Set(); // 这里存放着所有的模块
-    this.chunks = new Set(); // 代码块 webpack5 this.chunks = new Set()
+    this.entries = []; // 这个数组存放的所有的入口模块
+    this.modules = []; // 这里存放着所有的模块
+    this.chunks = []; // 代码块 webpack5 this.chunks = new Set()
     this.assets = {}; // 输出列表，存放着将要产出的资源文件
-    this.files = new Set(); // 表示本次编译的所有产出的文件名
+    this.files = []; // 表示本次编译的所有产出的文件名
   }
 
   // 4. 执行对象的 run 方法开始执行编译
@@ -48,13 +48,13 @@ class Compiler {
       let entryPath = toUnixPath(path.join(this.options.context, entry[entryName]));
       // 6. 从入口文件出发,调用所有配置的Loader对模块进行编译
       let entryModule = this.buildModule(entryName, entryPath);
-      // this.modules.add(entryModule); // 入口模块
+      // this.modules.push(entryModule); // 入口模块
       // 中间就是编译过程...
       console.log(this.modules);
       // 8. 根据入口和模块之间的依赖关系，组装成一个个包含多个模块的 Chunk
       let chunk = { name: entryName, entryModule, modules: this.modules.filter(module => module.name === entryName) }
-      this.chunks.add(chunk);
-      this.entries.add(chunk); // 也是入口代码块
+      this.chunks.push(chunk);
+      this.entries.push(chunk); // 也是入口代码块
     }
 
     // 9. 再把每个 Chunk 转换成一个单独的文件加入到输出列表
@@ -145,7 +145,7 @@ class Compiler {
           let depModuleId = './' + path.posix.relative(baseDir, depModulePath); // ./src/title.js
           //修改抽象语法树
           node.arguments = [types.stringLiteral(depModuleId)]; // 改变参数：./title.js 变成 ./src/title/js 
-          module.dependencies.add(depModulePath);// 添加依赖
+          module.dependencies.push(depModulePath);// 添加依赖
         }
       }
     })
@@ -156,7 +156,7 @@ class Compiler {
     // 7. 再找出该模块依赖的模块，再递归本步骤直到所有入口依赖的文件都经过了本步骤的处理
     module.dependencies.forEach(dependency => {
       let dependencyModule = this.buildModule(name, dependency);
-      this.modules.add(dependencyModule)
+      this.modules.push(dependencyModule)
     })
     return module;
   }

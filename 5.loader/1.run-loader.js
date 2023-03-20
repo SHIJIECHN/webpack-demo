@@ -7,19 +7,21 @@
 
 const path = require('path');
 const fs = require('fs');
-const { runLoaders } = require('loader-runner');
-const filePath = path.resolve(__dirname, 'src', 'index.js'); // 源文件的绝对路径
+const { runLoaders } = require('./loader-runner');
+// 源文件的绝对路径 C:/User/src/05.loader/src/index.js
+const filePath = path.resolve(__dirname, 'src', 'index.js');
 let loaders = [];
 
-// 如何得到
-// 要加载的资源 就是文件中有可能写 require('inline-loader1!inline-loader2!./src/index.js')
-const request = `inline-loader1!inline-loader2!${filePath}`; // 如何加载呢？
-// 如何组装loader呢？
-// 切分
-const parts = request.replace(/^-?!+/, '').split('!'); // 先将前缀去掉，在分割
-const resource = parts.pop();// 最后一个元素就是要加载的资源了
-// loader=inline-loader1   inline-loader1的绝对路径
-const resolveLoader = (loader) => path.resolve(__dirname, 'loaders', loader);
+// 如何得到 loaders 数组？
+// 要加载的资源 require('inline-loader1!inline-loader2!./src/index.js')
+const request = `inline-loader1!inline-loader2!${filePath}`;
+// 切分，先将前缀去掉，在分割
+const parts = request.replace(/^-?!+/, '').split('!');
+// 最后一个元素就是要加载的资源文件 ./src/index.js
+const resource = parts.pop();
+// loader=inline-loader1 => inline-loader1的绝对路径
+// c:/user/05.loader/loaders/inline-loader1.js
+const resolveLoader = (loader) => path.resolve(__dirname, 'loaders1', loader);
 // inlineLoaders = [inline-loader1的绝对路径, inline-loader2的绝对路径]
 const inlineLoaders = parts.map(resolveLoader);
 // 配置文件rules数组
@@ -30,7 +32,7 @@ const rules = [
     use: ['pre-loader1', 'pre-loader2']
   },
   {
-    test: /\.js$/,
+    test: /\.js$/, // 没有设置，默认是normal
     use: ['normal-loader1', 'normal-loader2']
   },
   {
@@ -55,16 +57,16 @@ for (let i = 0; i < rules.length; i++) {
     }
   }
 }
-// 名字变成绝对路径
+// 通过loader名字，获得loader绝对路径
 preLoaders = preLoaders.map(resolveLoader);
 postLoaders = postLoaders.map(resolveLoader);
 normalLoaders = normalLoaders.map(resolveLoader);
 
-if (request.startsWith('!!')) { // 不要pre、post、auto
+if (request.startsWith('!!')) { // 不要pre、post、normal
   loaders = [...inlineLoaders];
-} else if (request.startsWith('-!')) { // 不要pre、auto
+} else if (request.startsWith('-!')) { // 不要pre、normal
   loaders = [...postLoaders, ...inlineLoaders];
-} else if (request.startsWith('!')) { // 不要auto
+} else if (request.startsWith('!')) { // 不要normal
   loaders = [...postLoaders, ...inlineLoaders, ...preLoaders];
 } else {
   loaders = [...postLoaders, ...inlineLoaders, ...normalLoaders, ...preLoaders];
@@ -86,9 +88,34 @@ runLoaders({
   // 读取文件的方法
   readResource: fs.readFile.bind(fs)
 }, function (err, result) {
-  console.log(result); // "console.log('hello index.js');\r\n" + '//pre2//pre1//normal2//normal1//inline2//inline1//post2//post1'
+  console.log(err)
+  console.log(result);
+  // "console.log('hello index.js');\r\n" + '//pre2//pre1//normal2//normal1//inline2//inline1//post2//post1'
 })
+
 /**
+ console.log(loaders);
+ [
+  'e:\\A01-basicFrontEnd\\performance\\webpack-demo\\5.loader\\loaders1\\post-loader1',
+  'e:\\A01-basicFrontEnd\\performance\\webpack-demo\\5.loader\\loaders1\\post-loader2',
+  'e:\\A01-basicFrontEnd\\performance\\webpack-demo\\5.loader\\loaders1\\inline-loader1',
+  'e:\\A01-basicFrontEnd\\performance\\webpack-demo\\5.loader\\loaders1\\inline-loader2',
+  'e:\\A01-basicFrontEnd\\performance\\webpack-demo\\5.loader\\loaders1\\normal-loader1',
+  'e:\\A01-basicFrontEnd\\performance\\webpack-demo\\5.loader\\loaders1\\normal-loader2',
+  'e:\\A01-basicFrontEnd\\performance\\webpack-demo\\5.loader\\loaders1\\pre-loader1',
+  'e:\\A01-basicFrontEnd\\performance\\webpack-demo\\5.loader\\loaders1\\pre-loader2'
+]
+ */
+/**
+ loader里面内容输出：
+ post1-pitch
+post2-pitch
+inline1-pitch
+inline2-pitch
+normal1-pitch
+normal2-pitch
+pre1-pitch
+pre2-pitch
 pre2
 pre1
 normal2
@@ -98,4 +125,21 @@ inline1
 post2
 this.name:  zhufeng
 post1
+ */
+
+/**
+console.log(result);
+{
+  result: [
+    "console.log('hello index.js');\n" +
+      '//pre2//pre1//normal2//normal1//inline2//inline1//post2//post1'
+  ],
+  resourceBuffer: <Buffer 63 6f 6e 73 6f 6c 65 2e 6c 6f 67 28 27 68 65 6c 6c 6f 20 69 6e 64 65 78 2e 6a 73 27 29 3b 0a>,
+  cacheable: true,
+  fileDependencies: [
+    'e:\\A01-basicFrontEnd\\performance\\webpack-demo\\5.loader\\src\\index.js'
+  ],
+  contextDependencies: [],
+  missingDependencies: []
+}
  */

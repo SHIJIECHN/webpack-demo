@@ -1,2 +1,2 @@
-const css = require('./index.less');
+const css = require('./index.css');
 console.log(css);

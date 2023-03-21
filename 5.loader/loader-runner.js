@@ -123,11 +123,7 @@ function iteratePitchingLoaders(processOptions, loaderContext, finalCallback) {
   }
   // 以同步或者异步方式调用pitchFunction
   runSyncOrAsync(pitchFunction, loaderContext,
-    [
-      loaderContext.remainingRequest,
-      loaderContext.previousRequest,
-      loaderContext.data
-    ],
+    [loaderContext.remainingRequest, loaderContext.previousRequest, loaderContext.data],
     (err, ...values) => {
       // 如果有返回值
       if (values.length > 0 && !!values[0]) {
@@ -142,25 +138,25 @@ function iteratePitchingLoaders(processOptions, loaderContext, finalCallback) {
 /**
  * 每次loader函数的执行同步异步都是独立的
  * @param {*} fn 要执行的函数
- * @param {*} loaderContext 
+ * @param {*} context 
  * @param {*} args 参数数组
- * @param {*} runCallback 
+ * @param {*} callback 
  */
-function runSyncOrAsync(fn, loaderContext, args, callback) {
+function runSyncOrAsync(fn, context, args, callback) {
   let isSync = true; // 是否是同步，默认是的
   let isDone = false; // 是否fn已经执行完成，默认是false
   // innerCallback与callback是同一个函数
-  const innerCallback = loaderContext.callback = function (err, ...args) {
+  const innerCallback = context.callback = function (err, ...value) {
     isDone = true;
     isSync = false;
-    callback.apply(err, ...args); // 如果是异步执行，需要调用callback继续执行
+    callback.apply(err, ...value); // 如果是异步执行，需要调用callback继续执行
   }
-  loaderContext.async = function () {
+  context.async = function () {
     isSync = false; // 把同步标志设置为false 意思就是改为异步
     return innerCallback
   }
   // 就是执行pitch函数，pitch的返回值可有可无
-  let result = fn.apply(loaderContext, args);
+  let result = fn.apply(context, args);
   // 如果isSync标志是true，意味着同步
   if (isSync) {
     isDone = true; // 直接完成

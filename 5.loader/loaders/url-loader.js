@@ -1,5 +1,5 @@
 const mime = require('mime');
-const { getOptions, interpolateName } = require('loader-utils');// 工具模块
+const { getOptions } = require('loader-utils');// 工具模块
 
 function loader(content) {
   // content 默认格式是字符串
@@ -18,21 +18,6 @@ function loader(content) {
   }
 
 }
-// function loader(source) {
-//   let options = getOptions(this) || {};
-//   let { limit, fallback = 'file-loader' } = options;
-//   if (limit) {
-//     limit = parseInt(limit, 10);
-//   }
-//   const mimetype = mime.getType(this.resourcePath);
-//   if (!limit || source.length < limit) {
-//     let base64 = `data:${mimetype};base64,${source.toString('base64')}`;
-//     return `module.exports = ${JSON.stringify(base64)}`;
-//   } else {
-//     let fileLoader = require(fallback || 'file-loader');
-//     return fileLoader.call(this, source);
-//   }
-// }
 // 如果你不希望webpack帮你把内容转成字符串的话，loader.raw=true，
 // 这样的话content就是一个二进制Buffer
 loader.raw = true;

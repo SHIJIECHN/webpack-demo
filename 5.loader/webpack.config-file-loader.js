@@ -9,7 +9,6 @@ module.exports = {
         test: /\.(jpg|png|gif)$/,
         use: [{
           loader: path.resolve('./loaders/url-loader.js'),
-          // loader: 'url-loader',
           options: {
             name: '[hash:8].[ext]',
             esModule: false,
@@ -24,13 +23,4 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin()
   ]
-
 }
-
-/**
- * 向使用自定义的loader
- * 三种方法：
- * 1. alias
- * 2. modules
- * 3. use 绝对路径
- */

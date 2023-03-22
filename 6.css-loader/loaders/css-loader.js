@@ -9,11 +9,40 @@ function loader(inputSource) {
   // 遍历语法树，找到@import
   const cssPlugin = (options) => {
     return (root) => {
-      // 1.删除所有的import 2. 把导入的css文件路径添加到options.imports里
-      root.walkAtRules(/^import$/i, (rule) => {
-        rule.remove();// 在css脚本里把@import删除
-        options.imports.push(rule.params.slice(1, -1));// rule.params="./global.css" 去掉空格
-      })
+      if (loaderOptions.import) {
+        // 1.删除所有的import 2. 把导入的css文件路径添加到options.imports里
+        root.walkAtRules(/^import$/i, (rule) => {
+          rule.remove();// 在css脚本里把@import删除
+          options.imports.push(rule.params.slice(1, -1));// rule.params="./global.css" 去掉空格
+        })
+      }
+
+      if (loaderOptions.url) {
+        // 2. 遍历语法树，找到里面所有的url
+        // 因为这个正则只能匹配属性
+        root.walkDecls(decl => {
+          let values = Tokenizer.parseValues(decl.value);
+          // console.log("values", JSON.stringify(values, null, 2));
+          values.nodes.forEach(node => {
+            node.nodes.forEach(item => {
+              if (item.type === 'url') {
+                // 找到url了 ./images/kf.jpg
+                // stringifyRequest可以把任意路径标准化成相对路径
+                let url = loaderUtils.stringifyRequest(this, item.url);
+                console.log(url); // "./images/kf.jpg"
+                item.stringType = "'";
+                item.url = "`+require(" + url + ")+`"; // 把图片地址变成require语句，
+                // 这个require会给webpack看和分析，webpack一看你引入了一张图片
+                // 文本pack会使用file-loader去加载图片
+              }
+            })
+          })
+          // 重新把对象变成字符串赋值给decl.value 
+          // url('./images/kf.jpg')=> +require('./images/kf.jpg')
+          let value = Tokenizer.stringifyValues(values);
+          decl.value = value;
+        })
+      }
     }
   }
   // 将会用它来收集所以的import
@@ -26,7 +55,7 @@ function loader(inputSource) {
     let { loaders, loaderIndex } = this; // 所有loader的数组和当前loader的索引
     let loadersRequest = loaders.slice( // 截取
       loaderIndex,
-      loaderIndex + 1 + importLoaders
+      loaderIndex + 1 + importLoaders // 包含自己和前面importLoaders个
     ).map(x => x.request).join('!');// request就是loader的绝对路径
     // css-loader.js的绝对路径!less-loader.js的绝对路径!./global.js
 
@@ -43,7 +72,6 @@ function loader(inputSource) {
     const script = `
       var list  =[];
       list.toString = function(){ return this.join();}
-      // list.push(require('./global.css').toString());
       ${importCss}
       list.push(\`${result.css}\`)
       module.exports = list;

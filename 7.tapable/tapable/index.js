@@ -1,0 +1,4 @@
+
+class SyncHook extends Hook {
+
+}

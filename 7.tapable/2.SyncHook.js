@@ -1,5 +1,6 @@
-const { SyncHook } = require('tapable');
+const { SyncHook } = require('./tapable');
 // 参数是形参的数组，参数名没有意义，但是数组长度有用
+debugger
 const syncHook = new SyncHook(['name', 'age']);
 // 第一个参数是名字，名字没有用
 /**

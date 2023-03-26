@@ -2,7 +2,7 @@ class Hook {
   constructor(args) {
     // 如果不是数组，就设置为空数组
     if (!Array.isArray(args)) args = []
-    this._args = args;// 存放形参数组 ['name', 'age']
+    this.args = args;// 存放形参数组 ['name', 'age']
     this.taps = []; // 存放着所有的回调函数的数组
     this.call = CALL_DELEGATE;
     // this._call = CALL_DELEGATE;
@@ -16,15 +16,23 @@ class Hook {
     if (typeof options === 'string') {
       options = { name: options } // 如果是字符串就转成对象 {name:1}
     }
-    const tapInfo = { ...options, type: 'sync', fn };
+    const tapInfo = { ...options, type, fn }; // {name: '1', type: 'sync', fn: ƒ}
     this._insert(tapInfo); // 把对象作为参数给insert
   }
 
   // 插入到taps中
-  _insert() {
+  _insert(tapInfo) {
     // let i = this.taps.length;
     // this.taps[i] = tapInfo;
     this.taps.push(tapInfo);
+  }
+
+  _createCall(type) {
+    return this.compile({
+      taps: this.taps,
+      args: this.args,
+      type,
+    })
   }
 }
 
@@ -37,3 +45,4 @@ const CALL_DELEGATE = function (...args) {
 }
 
 // stage 阶段的概念
+module.exports = Hook;

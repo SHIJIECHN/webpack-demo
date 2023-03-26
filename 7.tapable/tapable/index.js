@@ -1,4 +1,3 @@
 
-class SyncHook extends Hook {
-
-}
+let SyncHook = require('./SyncHook.js');
+exports.SyncHook = SyncHook

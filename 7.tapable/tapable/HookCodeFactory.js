@@ -16,9 +16,13 @@ class HookCodeFactory {
     this.options = undefined;
   }
 
-  args() {  // 形参列表
-    if (Array.isArray(this.options.args)) {
-      return this.options.args.join(', '); // name,age
+  args(options = {}) {  // 形参列表 ///////////////////////////
+    const { before, after } = options;
+    let allArgs = this.options.args || []; // 原始非参数['name', 'age']
+    if (before) allArgs = [before, ...allArgs];
+    if (after) allArgs = [...allArgs, after]; // _callback
+    if (allArgs.length > 0) {
+      return allArgs.join(', '); // name,age,_callback
     }
     return '';
   }
@@ -41,17 +45,43 @@ class HookCodeFactory {
           })
         )
         break;
+      case 'async':
+        fn = new Function(
+          this.args({ after: '_callback' }),
+          this.header() + this.content({ // content是子类来实现
+            onDone: () => '_callback();\n' // 全部完成之后最后执行的回调
+          })
+        )
+        break;
+      case 'promise': ///////////////////////
+        let content = this.content({ // content是子类来实现
+          onDone: () => '_resolve();\n' // 全部完成之后最后执行的回调
+        });
+        content = `return new Promise((function (_resolve, _reject) {
+          ${content}
+        }));`;
+        fn = new Function(
+          this.args(),
+          this.header() + content);
+        break;
+
     }
     this.deinit(); // 销毁
     return fn;
   }
-  callTapsSeries1({ onDone }) {
-    // 拼接代码块 var _fn0 = _x[0]; _fn0(name, age);
-    let code = this.options.taps.map((item, index) => `
-        var _fn${index} = _x[${index}];
-        _fn${index}(${this.args()});
-      `
-    ).join('\n');
+  callTapsParallel({ onDone }) {
+    let code = `var _counter = ${this.options.taps.length};\n`;
+    if (onDone) { //   var _done = (function () {  _callback(); });
+      code += `
+      var _done = (function () {
+        ${onDone()}
+      });
+      `;
+    }
+    for (let i = 0; i < this.options.taps.length; i++) {
+      const done = () => `if (--_counter === 0) _done();`;
+      code += this.callTap(i, { onDone: done })
+    }
     return code;
   }
 
@@ -65,7 +95,7 @@ class HookCodeFactory {
       const content = this.callTap(j, { onDone: current });
       current = () => content;
     }
-    code += current;
+    code += current();
     return code;
   }
   /**
@@ -76,7 +106,7 @@ class HookCodeFactory {
 
   callTap(tapIndex, { onDone }) {  // 拼接var _fn2 = _x[2]; _fn2(name, age);
     let code = '';
-    code += `var _fn${tapIndex} = _x[${tapIndex}];`;
+    code += `var _fn${tapIndex} = _x[${tapIndex}];\n`;
     let tap = this.options.taps[tapIndex];
     switch (tap.type) {
       case 'sync':
@@ -84,6 +114,28 @@ class HookCodeFactory {
         if (onDone) {
           code += onDone();
         }
+        break;
+      case 'async': ///////////////////////////
+        let cbCode = `
+          function (_err${tapIndex}) {
+            if (_err${tapIndex}) {
+              _callback(_err${tapIndex});
+            } else {
+              ${onDone()}
+            }
+          }
+        `;
+        code += `_fn${tapIndex}(${this.args({ after: cbCode })});`;
+        break;
+      case 'promise':
+        code = `
+          var _fn${tapIndex} = _x[${tapIndex}];
+          var _promise${tapIndex} = _fn${tapIndex}(${this.args()});
+          _promise${tapIndex}.then(
+            function (_result${tapIndex}) {
+              ${onDone()}
+            });
+        `;
         break;
       default:
     }

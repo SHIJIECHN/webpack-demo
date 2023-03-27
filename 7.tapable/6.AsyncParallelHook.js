@@ -1,6 +1,7 @@
-const { AsyncParallelHook, HookMap } = require('tapable');
+const { AsyncParallelHook, HookMap } = require('./tapable');
 // 异步并行钩子，所有的回调是同时开始的
 // 等所有的回调都完成后才会调用最终的回调
+debugger
 const hook = new AsyncParallelHook(['name', 'age']);
 console.time('cost');
 hook.tapPromise('1', (name, age) => {
@@ -11,7 +12,7 @@ hook.tapPromise('1', (name, age) => {
     }, 1000)
   })
 })
-hook.tapAsync('2', (name, age) => {
+hook.tapPromise('2', (name, age) => {
   return new Promise((resolve) => {
     setTimeout(() => {
       console.log(2, name, age);

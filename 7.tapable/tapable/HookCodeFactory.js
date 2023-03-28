@@ -132,11 +132,13 @@ class HookCodeFactory {
   callTap(tapIndex, { onDone }) {  // 拼接var _fn2 = _x[2]; _fn2(name, age);
     let code = '';
     ////////////////////////////////
-    code += `  var _tap${tapIndex} = _taps[${tapIndex}];`
-    for (let i = 0; i < this.options.interceptors.length; i++) {
-      let interceptor = this.options.interceptors[i];
-      if (interceptor.tap) {
-        code += `_interceptors[${i}].tap(${this.needContext() && '_context,'} _tap${tapIndex});`
+    if (this.options.interceptors.length > 0) {
+      code += `  var _tap${tapIndex} = _taps[${tapIndex}];`
+      for (let i = 0; i < this.options.interceptors.length; i++) {
+        let interceptor = this.options.interceptors[i];
+        if (interceptor.tap) {
+          code += `_interceptors[${i}].tap(${this.needContext() && '_context,'} _tap${tapIndex});`
+        }
       }
     }
     /////////////

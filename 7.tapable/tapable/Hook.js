@@ -64,7 +64,39 @@ class Hook {
   // tapsInfo插入到taps中
   _insert(tapInfo) {
     this._resetCompilation(); // 重置编译
-    this.taps.push(tapInfo);
+    // this.taps.push(tapInfo);////////////stage///////////
+    let before;
+    if (typeof tapInfo.before == 'string') {
+      before = new Set([tapInfo.before]);
+    } else if (Array.isArray(tapInfo.before)) {
+      before = new Set(tapInfo.before);// 数组转成集合
+    }
+    let stage = 0;
+    if (typeof tapInfo.stage === 'number') {
+      stage = tapInfo.stage;
+    }
+    let i = this.taps.length;
+    while (i > 0) {
+      i--;
+      const x = this.taps[i];
+      this.taps[i + 1] = x;
+      const xStage = x.stage;
+      if (before) {
+        if (before.has(x.name)) { // before有没有当前tapInfo.name
+          before.delete(x.name); // 从set中删除
+          continue;
+        }
+        if (before.size > 0) { // before里面还有东西，就继续循环
+          continue;
+        }
+      }
+      if (xStage > stage) {
+        continue;
+      }
+      i++;
+      break;
+    }
+    this.taps[i] = tapInfo;
   }
   _createCall(type) {
     return this.compile({ // 子类调用compiler，compiler实现子类里

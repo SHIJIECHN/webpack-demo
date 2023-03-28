@@ -1,3 +1,5 @@
+const { ExternalModule } = require("webpack");
+
 class AutoExternalPlugin {
   constructor(options) {
     this.options = options;
@@ -32,9 +34,15 @@ class AutoExternalPlugin {
        * 传入factory参数，返回(data, callback) => { }新的工厂方法
        */
       normalModuleFactory.hooks.factorize.tapAsync('AutoExternalPlugin', (resolveData, callback) => {
-        debugger
-        console.log(resolveData)
-
+        let request = resolveData.request; // ./src/index.js  入口模块
+        // 生产模块
+        if (this.importedModules.has(request)) { // 外部模块
+          let variable = this.options[request].expose;// $
+          callback(null, new ExternalModule(variable, 'window', request));// 创建模块
+        } else {
+          // 普通模块
+          callback(null, new ExternalModule('jquery', 'window', request));// 创建模块
+        }
       })
     })
   }
@@ -45,7 +53,7 @@ class AutoExternalPlugin {
  * 1. 查找本项目中是否用到了某些模块
  * 2. 界入，改造生产模块的过程，如果这个模块配置为外部模块，就不需要打包了，会走外部模块流程，如果没有配置，就走正常流程。
  * 
- * normalModulFactory创建普通模块：
+ * normalModuleFactory创建普通模块：
  * 1. 找到原始的文件，读出文件内容
  * 2.交给loader进行转换，最终会得到一个JS文件
  * 3.把JS脚本转成AST抽象语法树

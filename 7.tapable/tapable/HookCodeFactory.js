@@ -30,6 +30,24 @@ class HookCodeFactory {
   header() { // 回调函数的头部 var _x = this._x;
     let code = "";
     code += "var _x = this._x;\n";// _x 是回调函数的数组
+    if (this.needContext()) { // 如果需要上下文就拼一个空对象/////////////////////////
+      code += `  var _context = {};\n`;
+    } else {
+      code += `  var _context;\n`
+    }
+    if (this.options.interceptors.length > 0) {
+      code += `var _taps = this.taps;`
+      code += `var _interceptors = this.interceptors;`
+    }
+    for (let k = 0; k < this.options.interceptors.length; k++) {
+      // 拿到每个拦截器
+      const interceptor = this.options.interceptors[k];
+      if (interceptor.call) {
+        code += `_interceptors[${k}].call(${this.args({
+          before: this.needContext() ? '_context' : undefined
+        })});`
+      }
+    }
     return code;
   }
 
@@ -53,7 +71,7 @@ class HookCodeFactory {
           })
         )
         break;
-      case 'promise': ///////////////////////
+      case 'promise':
         let content = this.content({ // content是子类来实现
           onDone: () => '_resolve();\n' // 全部完成之后最后执行的回调
         });
@@ -98,24 +116,42 @@ class HookCodeFactory {
     code += current();
     return code;
   }
+  ////////////////////////////////
+  needContext() {
+    for (const tapInfo of this.options.taps) {
+      if (tapInfo.context) return true
+    }
+  }
   /**
    * 第一次执行时，tapIndex=2, onDone=""
    * @param {*} tapIndex 
    * @param {*} param1 
    */
 
+
   callTap(tapIndex, { onDone }) {  // 拼接var _fn2 = _x[2]; _fn2(name, age);
     let code = '';
+    ////////////////////////////////
+    code += `  var _tap${tapIndex} = _taps[${tapIndex}];`
+    for (let i = 0; i < this.options.interceptors.length; i++) {
+      let interceptor = this.options.interceptors[i];
+      if (interceptor.tap) {
+        code += `_interceptors[${i}].tap(${this.needContext() && '_context,'} _tap${tapIndex});`
+      }
+    }
+    /////////////
     code += `var _fn${tapIndex} = _x[${tapIndex}];\n`;
     let tap = this.options.taps[tapIndex];
     switch (tap.type) {
       case 'sync':
-        code += `_fn${tapIndex}(${this.args()});`
+        code += `_fn${tapIndex}(${this.args({ /////////////////////////
+          before: this.needContext() ? '_context' : undefined
+        })});`
         if (onDone) {
           code += onDone();
         }
         break;
-      case 'async': ///////////////////////////
+      case 'async':
         let cbCode = `
           function (_err${tapIndex}) {
             if (_err${tapIndex}) {

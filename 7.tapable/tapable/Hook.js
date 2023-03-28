@@ -23,7 +23,8 @@ class Hook {
     this.taps = []; // 存放着所有的回调函数的数组
     this.call = CALL_DELEGATE; // call方法的代理
     this.callAsync = CALL_ASYNC_DELEGATE; // callAsync方法的代理 
-    this.promise = PROMISE_DELEGATE; // promise///////////////////////////
+    this.promise = PROMISE_DELEGATE; // promise
+    this.interceptors = [];///////////////////////////
   }
 
   tap(options, fn) { // 调用tap方法的时候
@@ -32,21 +33,36 @@ class Hook {
   tapAsync(options, fn) {
     this._tap('async', options, fn);
   }
-  tapPromise(options, fn) { ///////////////////////////////////
+  tapPromise(options, fn) {
     this._tap('promise', options, fn);
   }
   _tap(type, options, fn) { // options='1'与options={name:'1'}是等价的
     if (typeof options === 'string') {
       options = { name: options } // 如果是字符串就转成对象 {name:1}
     }
-    const tapInfo = { ...options, type, fn }; // {name: '1', type: 'sync', fn: ƒ}
+    let tapInfo = { ...options, type, fn }; // {name: '1', type: 'sync', fn: ƒ}
+    tapInfo = this._runRegisterInterceptors(tapInfo);//////////////////////////////
     this._insert(tapInfo); // 把对象作为参数给insert，在insert中将tapInfo放入taps中
+  }
+  _runRegisterInterceptors(tapInfo) {////////////////////////////////
+    for (const interceptor of this.interceptors) {
+      if (interceptor.register) { // 如果有注册拦截器
+        let newTapInfo = interceptor.register(tapInfo);
+        if (newTapInfo) {
+          tapInfo = newTapInfo
+        }
+      }
+    }
+    return tapInfo;
+  }
+  intercept(interceptor) {/////////////////////////////
+    this.interceptors.push(interceptor)
   }
   _resetCompilation() {
     this.call = CALL_DELEGATE;
   }
   // tapsInfo插入到taps中
-  _insert(tapInfo) {//////////////////
+  _insert(tapInfo) {
     this._resetCompilation(); // 重置编译
     this.taps.push(tapInfo);
   }
@@ -54,6 +70,7 @@ class Hook {
     return this.compile({ // 子类调用compiler，compiler实现子类里
       taps: this.taps, // 存放着回调函数的数组
       args: this.args, // ['name','age']
+      interceptors: this.interceptors, ///////////////////////
       type,
     })
   }

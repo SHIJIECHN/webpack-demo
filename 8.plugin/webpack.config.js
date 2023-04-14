@@ -2,11 +2,19 @@ const AssetsPlugin = require('./plugins/AssetsPlugin.js')
 const DonePlugin = require('./plugins/DonePlugin.js')
 const ZipPlugin = require('./plugins/ZipPlugin.js')
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-let AutoExternalPlugin = require('./plugins/AutoExternalPlugin.js')
+let AutoExternalPlugin = require('./plugins/AutoExternalPlugin.js');
+const path = require('path');
 module.exports = {
   mode: 'development',
   devtool: 'cheap-source-map',
   entry: './src/index.js',
+  output: {
+    path: path.resolve(__dirname, 'dist'),
+    filename: 'main.js',
+  },
+  module: {
+    rules: []
+  },
   // externals: {
   //   'jquery': '$'
   // },
@@ -15,7 +23,7 @@ module.exports = {
     // new AssetsPlugin(),
     // new ZipPlugin()
     new HtmlWebpackPlugin({
-      template: './src/index.html'
+      template: './src/index.html',
     }),
     new AutoExternalPlugin({
       jquery: {

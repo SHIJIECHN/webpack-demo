@@ -1,4 +1,5 @@
 import $ from 'jquery'
 console.log($);
-const lodash = require('lodash')
+const _ = require('lodash')
+console.log(_)
 console.log('hello')

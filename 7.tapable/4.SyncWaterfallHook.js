@@ -8,7 +8,7 @@ clickHook.tap('1', (name, age) => {
 })
 clickHook.tap('2', (name, age) => {
   console.log(2, name, age);
-  // return 'jiagou';
+  return 'jiagou';
 })
 clickHook.tap('3', (name, age) => {
   console.log(3, name, age);

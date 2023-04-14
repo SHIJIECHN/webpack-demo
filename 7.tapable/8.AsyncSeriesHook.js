@@ -15,7 +15,7 @@ hook.tapPromise('2', (name, age) => {
     setTimeout(() => {
       console.log(2, name, age);
       resolve();
-    }, 2000)
+    }, 1000)
   })
 })
 hook.tapPromise('3', (name, age) => {
@@ -23,7 +23,7 @@ hook.tapPromise('3', (name, age) => {
     setTimeout(() => {
       console.log(3, name, age);
       resolve();
-    }, 3000)
+    }, 1000)
   })
 })
 

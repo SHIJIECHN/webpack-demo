@@ -36,5 +36,5 @@ hook.promise('zhufeng', 10).then(result => {
 1 zhufeng 10
 2 zhufeng 10
 结果2
-cost: 3.031s
+cost: 3.008s
  */

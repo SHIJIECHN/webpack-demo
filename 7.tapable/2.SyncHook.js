@@ -19,8 +19,8 @@ syncHook.tap('3', (name, age) => {
 
 syncHook.call('zhufeng', 10);
 
-syncHook.tap('4', (name, age) => {
-  console.log(4, name, age);
-})
+// syncHook.tap('4', (name, age) => {
+//   console.log(4, name, age);
+// })
 
-syncHook.call('jiagou', 10);
+// syncHook.call('jiagou', 10);
